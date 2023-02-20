@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  main_db:
+    image: bitnami/postgresql:12
+    container_name: main_db
+    restart: always
+    ports:
+      - "5435:5435"
+    env_file: .env
+    networks:
+      - admin_net
+    volumes:
+      - main_db_data:/bitnami/postgresql
+
+  main_backend:
+    container_name: main_backend
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_DEFAULT_USER = guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+      - BROKER_HOST=admin_rabbit
+    ports:
+      - 8001:5000
+    volumes:
+      - .:/app
+    command: "python main.py"
+    depends_on:
+      - main_db
+    networks:
+      - admin_net
+
+networks:
+  admin_net:
+    driver: bridge
+volumes:
+  main_db_data:
+
+

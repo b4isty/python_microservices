@@ -52,11 +52,28 @@ services:
              python3 manage.py collectstatic --noinput &&
              python3 manage.py makemigrations
              python3 manage.py migrate
-             python3 manage.py runserver 0.0.0.0:8000"
+             python manage.py consume"
+#             python3 manage.py runserver 0.0.0.0:8000"
     depends_on:
       - admin_db
     networks:
       - admin_net
+
+#  queue:
+#    container_name: admin_queue
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    command: "python consumer.py"
+#    depends_on:
+#      - admin_db
+
+
+networks:
+  admin_net:
+    driver: bridge
+volumes:
+  admin_db_data:
 
   # admin_mysqldb:
   #   container_name: admin_mysqldb
@@ -77,11 +94,7 @@ services:
   #   networks:
   #     - admin_net
 
-networks:
-  admin_net:
-    driver: bridge
-volumes:
-  admin_db_data:
+
 #  admin_rabbit:
 #    restart: on-failure
 #    image: rabbitmq:3-management

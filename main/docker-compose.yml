@@ -6,7 +6,7 @@ services:
     container_name: main_db
     restart: always
     ports:
-      - "5435:5435"
+      - "5435:5432"
     env_file: .env
     networks:
       - admin_net
@@ -35,11 +35,17 @@ services:
       - main_db
     networks:
       - admin_net
+  queue:
+    container_name: main_queue
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "python consumer.py"
+    depends_on:
+      - main_db
 
 networks:
   admin_net:
     driver: bridge
 volumes:
   main_db_data:
-
-
